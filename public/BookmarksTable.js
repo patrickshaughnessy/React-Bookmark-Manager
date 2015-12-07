@@ -4,6 +4,7 @@ var moment = require('moment')
 import keygen from './keygen';
 import Caret from './Caret';
 import Heart from './Heart';
+import OnlyLiked from './OnlyLiked';
 import Trash from './Trash';
 
 export default class extends React.Component {
@@ -17,8 +18,14 @@ export default class extends React.Component {
         {header: 'created', descending: true}
       ],
       sortIndex: 2,
-      liked: []
+      liked: [],
+      onlyLiked: false
     }
+  }
+
+  toggleOnlyLiked(){
+    let onlyLiked = !this.state.onlyLiked;
+    this.setState({onlyLiked: onlyLiked})
   }
 
   deleteBookmark(i){
@@ -43,7 +50,6 @@ export default class extends React.Component {
 
   generateHeaders(bookmarks){
     return Object.keys(bookmarks[0]).map((header, i) => {
-      console.log('inside generate - filters: ', this.state.sortFilters[i])
       header = header.charAt(0).toUpperCase() + header.slice(1);
       return <th key={keygen()}>
                 {header} <Caret toggleSort={this.toggleSort.bind(this, i)}
@@ -102,20 +108,41 @@ export default class extends React.Component {
         }
       });
 
+      if (this.state.onlyLiked){
+        bookmarks = bookmarks.filter(bookmark => {
+          return this.state.liked.indexOf(bookmark.created) > -1
+        });
+        if (!bookmarks.length) {
+          return (
+            <div>
+              <OnlyLiked toggleOnlyLiked={this.toggleOnlyLiked.bind(this)}
+                         checked={this.state.onlyLiked} />
+              <h4 className="noBookmarks">... No bookmarks favorited ...</h4>
+            </div>
+          )
+        }
+      }
+
       return (
-        <div className="table-responsive">
-          <table className="table">
-            <thead>
-              <tr>
-                {this.generateHeaders(bookmarks)}
-                <th>Likes</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.generateData(bookmarks)}
-            </tbody>
-          </table>
+        <div>
+          <div>
+            <OnlyLiked toggleOnlyLiked={this.toggleOnlyLiked.bind(this)}
+                       checked={this.state.onlyLiked} />
+          </div>
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  {this.generateHeaders(bookmarks)}
+                  <th>Likes</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.generateData(bookmarks)}
+              </tbody>
+            </table>
+          </div>
         </div>
       )
     }

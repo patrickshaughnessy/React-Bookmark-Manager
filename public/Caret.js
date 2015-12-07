@@ -16,7 +16,6 @@ export default class extends React.Component {
   }
 
   render(){
-    console.log('inside caret', this.props.info)
     if (this.state.info.descending){
       return (
         <i onClick={this.handleClick.bind(this)} className="fa fa-caret-down"></i>
