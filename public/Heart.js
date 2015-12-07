@@ -11,7 +11,6 @@ export default class extends React.Component {
   }
 
   render(){
-    console.log('inside heart', this.props.liked);
     if (this.props.liked === -1){
       return (
         <i onClick={this.handleClick.bind(this)} className="fa fa-heart-o"></i>

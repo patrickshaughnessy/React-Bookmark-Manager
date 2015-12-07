@@ -13,6 +13,14 @@ export default class extends React.Component {
     }
   }
 
+  deleteBookmark(id){
+    console.log('inside app delete', id);
+    let bookmarks = this.state.bookmarks.filter(bookmark => {
+      return bookmark.created !== id;
+    });
+    this.setState({bookmarks: bookmarks})
+  }
+
   addBookmark(newBookmark){
     newBookmark.created = Date.now();
     newBookmark.url = `http://${newBookmark.url}`
@@ -21,18 +29,6 @@ export default class extends React.Component {
     this.setState({bookmarks: bookmarks});
   }
 
-  // sortBy(direction, id){
-  //   console.log('inside app sort', direction, id)
-  //   let bookmarks = this.state.bookmarks.sort((a, b) => {
-  //     return a[id] > b[id]
-  //   });
-  //   this.setState({
-  //     bookmarks: bookmarks,
-  //     sortBy: {key: id, direction: direction}
-  //   });
-  //   return  this.state.sortBy
-  // }
-
   render(){
     return(
       <div className='row'>
@@ -40,7 +36,8 @@ export default class extends React.Component {
           <AddBookmarkForm action={this.addBookmark.bind(this)} />
         </div>
         <div className="col-xs-12">
-          <BookmarksTable bookmarks={this.state.bookmarks} />
+          <BookmarksTable bookmarks={this.state.bookmarks}
+                          deleteBookmark={this.deleteBookmark.bind(this)} />
         </div>
       </div>
     )

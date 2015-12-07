@@ -21,8 +21,11 @@ export default class extends React.Component {
     }
   }
 
+  deleteBookmark(i){
+    this.props.deleteBookmark(i);
+  }
+
   toggleLiked(index){
-    console.log('inside toggleLiked', index);
     let liked = this.state.liked;
     if (this.state.liked.indexOf(index) === -1){
       liked = liked.concat(index);
@@ -67,13 +70,14 @@ export default class extends React.Component {
         }
         tr.push(<td key={keygen()}>{data}</td>);
       }
+      let id = row.created;
       tr.push(
         <td key={keygen()}>
-          <Heart toggleLiked={this.toggleLiked.bind(this, i)}
-                 liked={this.state.liked.indexOf(i)} />
+          <Heart toggleLiked={this.toggleLiked.bind(this, id)}
+                 liked={this.state.liked.indexOf(id)} />
         </td>,
         <td key={keygen()}>
-          <Trash />
+          <Trash deleteBookmark={this.deleteBookmark.bind(this, id)} />
         </td>)
       return (
         <tr key={keygen()}>{tr}</tr>

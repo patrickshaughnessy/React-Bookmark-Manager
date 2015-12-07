@@ -10,9 +10,7 @@ export default class extends React.Component {
 
   handleClick(e){
     e.preventDefault();
-    // let descending = !this.state.info.descending;
-    // this.props.toggleSort(descending);
-    // this.setState({descending: descending})
+    this.props.deleteBookmark();
   }
 
   render(){
