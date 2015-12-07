@@ -3,6 +3,8 @@ var moment = require('moment')
 
 import keygen from './keygen';
 import Caret from './Caret';
+import Heart from './Heart';
+import Trash from './Trash';
 
 export default class extends React.Component {
   constructor(props){
@@ -14,16 +16,26 @@ export default class extends React.Component {
         {header: 'url', descending: true},
         {header: 'created', descending: true}
       ],
-      sortIndex: 2
+      sortIndex: 2,
+      liked: []
     }
   }
 
+  toggleLiked(index){
+    console.log('inside toggleLiked', index);
+    let liked = this.state.liked;
+    if (this.state.liked.indexOf(index) === -1){
+      liked = liked.concat(index);
+    } else {
+      liked.splice(liked.indexOf(index), 1);
+    }
+    this.setState({liked: liked});
+  }
+
   toggleSort(index, descending){
-    console.log('inside toggle sort', index, descending);
     let sortFilters = this.state.sortFilters;
     sortFilters[index].descending = descending;
     this.setState({sortFilters: sortFilters, sortIndex: index});
-
   }
 
   generateHeaders(bookmarks){
@@ -38,7 +50,7 @@ export default class extends React.Component {
   }
 
   generateData(bookmarks){
-    return bookmarks.map(row => {
+    return bookmarks.map((row, i) => {
       var tr = [];
       for (var header in row){
         var data;
@@ -52,11 +64,17 @@ export default class extends React.Component {
           case 'created':
             data = moment(row[header]).fromNow()
             break;
-          default:
-            data = row[header];
         }
         tr.push(<td key={keygen()}>{data}</td>);
       }
+      tr.push(
+        <td key={keygen()}>
+          <Heart toggleLiked={this.toggleLiked.bind(this, i)}
+                 liked={this.state.liked.indexOf(i)} />
+        </td>,
+        <td key={keygen()}>
+          <Trash />
+        </td>)
       return (
         <tr key={keygen()}>{tr}</tr>
       )
@@ -86,6 +104,8 @@ export default class extends React.Component {
             <thead>
               <tr>
                 {this.generateHeaders(bookmarks)}
+                <th>Likes</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
