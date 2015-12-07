@@ -4,6 +4,7 @@ var moment = require('moment')
 import keygen from './keygen';
 import Caret from './Caret';
 import Heart from './Heart';
+import SearchBox from './SearchBox';
 import OnlyLiked from './OnlyLiked';
 import Trash from './Trash';
 
@@ -19,8 +20,16 @@ export default class extends React.Component {
       ],
       sortIndex: 2,
       liked: [],
-      onlyLiked: false
+      onlyLiked: false,
+      input: null,
+      filter: false
     }
+  }
+
+  filterResults(input){
+    console.log(input);
+    let filter = input.length ? true : false
+    this.setState({filter: filter, input: input});
   }
 
   toggleOnlyLiked(){
@@ -112,20 +121,33 @@ export default class extends React.Component {
         bookmarks = bookmarks.filter(bookmark => {
           return this.state.liked.indexOf(bookmark.created) > -1
         });
-        if (!bookmarks.length) {
-          return (
-            <div>
-              <OnlyLiked toggleOnlyLiked={this.toggleOnlyLiked.bind(this)}
-                         checked={this.state.onlyLiked} />
-              <h4 className="noBookmarks">... No bookmarks favorited ...</h4>
-            </div>
-          )
-        }
+      }
+
+      if (this.state.filter){
+        bookmarks = bookmarks.filter(bookmark => {
+          let input = new RegExp(this.state.input, 'gi');
+          console.log('regex', input)
+          return bookmark.title.match(input);
+        })
+      }
+
+      if (!bookmarks.length) {
+        return (
+          <div>
+            <SearchBox filterResults={this.filterResults.bind(this)}
+                       input={this.state.input} />
+            <OnlyLiked toggleOnlyLiked={this.toggleOnlyLiked.bind(this)}
+                       checked={this.state.onlyLiked} />
+            <h4 className="noBookmarks">... No bookmarks favorited ...</h4>
+          </div>
+        )
       }
 
       return (
         <div>
           <div>
+            <SearchBox filterResults={this.filterResults.bind(this)}
+                       input={this.state.input} />
             <OnlyLiked toggleOnlyLiked={this.toggleOnlyLiked.bind(this)}
                        checked={this.state.onlyLiked} />
           </div>
